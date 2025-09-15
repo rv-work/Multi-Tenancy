@@ -98,12 +98,6 @@ JWT_SECRET=your_jwt_secret_key
 FRONTEND_URL=http://localhost:5173
 ```
 
-### Frontend (.env)
-
-```env
-VITE_API_URL=http://localhost:3001
-```
-
 ## 🔒 Security Features
 
 - **Tenant Isolation**: Middleware-level enforcement prevents cross-tenant data access
