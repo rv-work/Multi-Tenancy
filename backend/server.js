@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 const corsOptions = {
   origin: [
     'https://multi-tenancy-omega.vercel.app', 
+    'https://multi-tenancy-omega.vercel.app/', 
     'http://localhost:5173', 
     '*' 
   ],
