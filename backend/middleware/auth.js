@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+
 export const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -28,4 +29,27 @@ export const authenticateToken = async (req, res, next) => {
   } catch (error) {
     return res.status(403).json({ success: false, message: 'Invalid or expired token.' });
   }
+};
+
+
+export const requireRole = (roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required.' 
+      });
+    }
+
+    const userRoles = Array.isArray(roles) ? roles : [roles];
+    
+    if (!userRoles.includes(req.user.role)) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Insufficient permissions.' 
+      });
+    }
+
+    next();
+  };
 };
