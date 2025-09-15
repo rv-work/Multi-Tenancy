@@ -5,13 +5,7 @@ import toast from "react-hot-toast";
 const AuthContext = createContext();
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -24,9 +18,7 @@ export const AuthProvider = ({ children }) => {
   const checkAuth = async () => {
     try {
       const response = await api.get("/auth/profile");
-      if (response.data.success) {
-        setUser(response.data.user);
-      }
+      if (response.data.success) setUser(response.data.user);
     } catch (error) {
       console.log("Not authenticated");
       console.log("error : ", error);
@@ -38,8 +30,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await api.post("/auth/login", { email, password });
-
       if (response.data.success) {
+        localStorage.setItem("token", response.data.token);
         setUser(response.data.user);
         toast.success(`Welcome back, ${response.data.user.email}!`);
         return { success: true };
@@ -52,19 +44,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    try {
-      await api.post("/auth/logout");
-      setUser(null);
-      toast.success("Logged out successfully");
-    } catch (error) {
-      console.error("Logout error:", error);
-    }
+    localStorage.removeItem("token");
+    setUser(null);
+    toast.success("Logged out successfully");
   };
 
   const inviteUser = async (email, role) => {
     try {
       const response = await api.post("/auth/invite", { email, role });
-
       if (response.data.success) {
         toast.success("User invited successfully");
         return { success: true };
@@ -79,14 +66,10 @@ export const AuthProvider = ({ children }) => {
   const upgradeTenant = async () => {
     try {
       const response = await api.post(`/tenants/${user.tenant.slug}/upgrade`);
-
       if (response.data.success) {
         setUser((prev) => ({
           ...prev,
-          tenant: {
-            ...prev.tenant,
-            subscription: "pro",
-          },
+          tenant: { ...prev.tenant, subscription: "pro" },
         }));
         toast.success("Upgraded to Pro successfully!");
         return { success: true };

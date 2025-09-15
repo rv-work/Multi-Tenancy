@@ -4,7 +4,7 @@ import Tenant from '../models/Tenant.js';
 
 const generateToken = (userId) => {
   return jwt.sign(
-    { userId }, 
+    { userId },
     process.env.JWT_SECRET,
     { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
   );
@@ -14,7 +14,6 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -22,46 +21,26 @@ export const login = async (req, res) => {
       });
     }
 
-    // Find user with tenant info
-    const user = await User.findOne({ 
+    const user = await User.findOne({
       email: email.toLowerCase(),
-      isActive: true 
+      isActive: true
     }).populate('tenantId');
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials.'
-      });
+      return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
 
-    // Check password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials.'
-      });
+      return res.status(401).json({ success: false, message: 'Invalid credentials.' });
     }
 
-    // Check if tenant is active
     if (!user.tenantId.isActive) {
-      return res.status(403).json({
-        success: false,
-        message: 'Tenant account is inactive.'
-      });
+      return res.status(403).json({ success: false, message: 'Tenant account is inactive.' });
     }
 
-    // Generate token
+    // Generate JWT (return in response, no cookie)
     const token = generateToken(user._id);
-
-    // Set HTTP-only cookie
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
 
     res.json({
       success: true,
@@ -82,25 +61,16 @@ export const login = async (req, res) => {
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error during login.'
-    });
+    res.status(500).json({ success: false, message: 'Server error during login.' });
   }
 };
 
 export const logout = (req, res) => {
   try {
-    res.clearCookie('token');
-    res.json({
-      success: true,
-      message: 'Logout successful.'
-    });
+    // Client side par token delete karna hoga, backend se kuch nahi
+    res.json({ success: true, message: 'Logout successful.' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error during logout.'
-    });
+    res.status(500).json({ success: false, message: 'Server error during logout.' });
   }
 };
 
@@ -122,10 +92,7 @@ export const getProfile = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Server error fetching profile.'
-    });
+    res.status(500).json({ success: false, message: 'Server error fetching profile.' });
   }
 };
 
@@ -133,27 +100,18 @@ export const inviteUser = async (req, res) => {
   try {
     const { email, role = 'member' } = req.body;
 
-    // Validate input
     if (!email) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email is required.'
-      });
+      return res.status(400).json({ success: false, message: 'Email is required.' });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User with this email already exists.'
-      });
+      return res.status(400).json({ success: false, message: 'User with this email already exists.' });
     }
 
-    // Create new user
     const newUser = new User({
       email: email.toLowerCase(),
-      password: 'password', // Default password
+      password: 'password', // default
       role,
       tenantId: req.tenantId
     });
@@ -172,9 +130,6 @@ export const inviteUser = async (req, res) => {
 
   } catch (error) {
     console.error('Invite user error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error during user invitation.'
-    });
+    res.status(500).json({ success: false, message: 'Server error during user invitation.' });
   }
 };
