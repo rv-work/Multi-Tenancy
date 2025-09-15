@@ -1,16 +1,10 @@
 {
   "version": 2,
   "name": "multi-tenancy-backend",
-  "functions": {
-    "index.js": {
-      "runtime": "nodejs18.x",
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/server.js"
+      "destination": "/index.js"
     }
   ],
   "headers": [
