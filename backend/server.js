@@ -15,7 +15,8 @@ const PORT = process.env.PORT || 5000;
 
 const corsOptions = {
   origin: 
-    'https://multi-tenancy-omega.vercel.app',
+    ['https://multi-tenancy-omega.vercel.app',
+    "*"],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Content-Type', 
@@ -25,13 +26,11 @@ const corsOptions = {
     'Origin',
     'User-Agent'
   ],
-  credentials: true,
   optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
 
-app.options('*', cors(corsOptions));
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*'); 
