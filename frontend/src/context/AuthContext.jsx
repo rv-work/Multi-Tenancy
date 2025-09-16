@@ -16,10 +16,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuth = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.get("/auth/profile");
       if (response.data.success) setUser(response.data.user);
     } catch (error) {
+      localStorage.removeItem("token");
       console.log("Not authenticated");
       console.log("error : ", error);
     } finally {
