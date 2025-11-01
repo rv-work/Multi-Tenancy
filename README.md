@@ -2,6 +2,8 @@
 
 A production-ready MERN stack multi-tenant SaaS application with role-based access control, subscription management, and secure tenant isolation.
 
+Live Demo: [Multi-Tenant SaaS Notes Application — Live](https://multi-tenancy-omega.vercel.app)
+
 ## 🏗️ Architecture
 
 **Multi-Tenancy Strategy**: Shared Database with Tenant ID
@@ -65,8 +67,8 @@ app.use((req, res, next) => {
 
 ## 🌐 Live Demo
 
-- **Frontend**: https://your-frontend.vercel.app
-- **Backend**: https://your-backend.vercel.app
+- **Frontend**: https://multi-tenancy-omega.vercel.app/dashboard
+- **Backend**: https://multi-tenancy-backend.vercel.app/
 
 ## 📦 Installation
 
