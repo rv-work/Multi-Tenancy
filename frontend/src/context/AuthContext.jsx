@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       localStorage.removeItem("token");
       console.log("Not authenticated");
-      console.log("error : ", error);
+      console.log("error: ", error);
     } finally {
       setLoading(false);
     }
